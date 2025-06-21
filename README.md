@@ -5,16 +5,18 @@
   <img style="margin-right: 8px;" src="https://img.shields.io/badge/Blade-%23000000.svg?style=for-the-badge&logo=laravel&logoColor=white" />
   <img style="margin-right: 8px;" src="https://img.shields.io/badge/PHP-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white" />
   <img style="margin-right: 8px;" src="https://img.shields.io/badge/Docker-%234688F1.svg?style=for-the-badge&logo=docker&logoColor=white" />
+  <img style="margin-right: 8px;" src="https://img.shields.io/badge/MySQL-%234479A1.svg?style=for-the-badge&logo=mysql&logoColor=white" />
 </p>
 
 InnerWell Klinic WebApp adalah sebuah sistem manajemen klinik berbasis web yang dibangun dengan Laravel. Aplikasi ini bertujuan untuk mempermudah pengelolaan data pasien, jadwal dokter, antrian, dan berbagai aspek operasional klinik lainnya. Dengan antarmuka yang intuitif dan fitur-fitur yang lengkap, InnerWell membantu meningkatkan efisiensi dan kualitas pelayanan klinik.
 
 ## Fitur Utama ✨
 
-*   **👨‍⚕️ Manajemen Dokter:** Kelola informasi dokter, jadwal praktik, dan spesialisasi dengan mudah.
+*   **👨‍⚕️ Pendaftaran Online :** Pasien dapat melakukan pendaftaran berobat melalui InnerWell WebApp
 *   **📅 Manajemen Antrian:** Sistem antrian terintegrasi untuk mengatur alur pasien dengan efisien dan mengurangi waktu tunggu.
-*   **📊 Dashboard Analitik:** Dapatkan wawasan berharga tentang kinerja klinik melalui dashboard yang informatif.
+*   **📊 Rekam Medis:** Catatan medis terkait dengan data medis pasien
 *   **💰 Integrasi Pembayaran Midtrans:** Memudahkan pasien dalam melakukan pembayaran secara online.
+*   **🧾 Laporan Keuangan & Operational:** Laporan terkait dengan keuangan dan operational dari InnerWell Klinic
 
 ## Tech Stack 🛠️
 
@@ -34,11 +36,9 @@ Pastikan telah terinstall:
 
 ### Instalasi dengan Docker
 
-Metode yang direkomendasikan untuk menjalankan aplikasi ini adalah menggunakan Docker untuk memastikan konsistensi lingkungan.
-
 1.  **Kloning Repositori**
     ```sh
-    git clone [https://github.com/whilyanpratama/innerwell-webapp.git](https://github.com/whilyanpratama/innerwell-webapp.git)
+    git clone https://github.com/InnerWell-Klinic/innerwell-webapp.git
     cd innerwell-webapp
     ```
 
@@ -55,44 +55,37 @@ Metode yang direkomendasikan untuk menjalankan aplikasi ini adalah menggunakan D
     docker-compose up -d --build
     ```
 
-4.  **Install Dependensi (Composer)**
-    Masuk ke dalam container `app` dan install semua dependensi PHP.
+4.  **Install Composer**
     ```sh
-    docker-compose exec app composer install
+    composer install
     ```
 
-5.  **Install Dependensi (NPM)**
-    Install dependensi JavaScript yang dibutuhkan.
-    ```sh
-    docker-compose exec app npm install
-    ```
-
-6.  **Generate Application Key**
-    Buat kunci enkripsi unik untuk aplikasi Laravel Anda.
-    ```sh
-    docker-compose exec app php artisan key:generate
-    ```
-
-7.  **Jalankan Migrasi & Seeder Database**
+5.  **Jalankan Migrasi & Seeder Database**
     Buat struktur tabel database dan isi dengan data awal (termasuk akun demo).
     ```sh
-    docker-compose exec app php artisan migrate --seed
+    php artisan migrate:fresh
+    php artisan migrate
+    php artisan db:seed
     ```
 
-8.  **Hubungkan Penyimpanan**
-    Buat symbolic link dari `public/storage` ke `storage/app/public`.
+8.  **Uncomment line 290 fungsi $this**
+    Setelah itu jalankan
     ```sh
-    docker-compose exec app php artisan storage:link
+    php artisan db:seed --class=JadwalDokterSeeder
     ```
 
-9.  **Compile Aset Frontend**
-    Jalankan Vite untuk meng-compile file CSS dan JS.
+9.  **Jika Terdapat Error**
+    Jalankan
     ```sh
-    docker-compose exec app npm run dev
+    php artisan config:clear
+    php artisan config:cache
+    php artisan route:clear
+    php artisan route:cache
+    php artisan view:clear
     ```
 
 10. **Selesai!**
-    Aplikasi sekarang seharusnya sudah berjalan. Buka browser Anda dan akses:
+    InnerWell WebApp sekarang seharusnya sudah berjalan. Buka browser dan akses:
     [**http://localhost:8000**](http://localhost:8000)
 
 ## Cara Berkontribusi 🤝
