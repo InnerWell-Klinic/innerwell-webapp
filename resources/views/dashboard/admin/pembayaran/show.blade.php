@@ -32,10 +32,23 @@
                 display: none !important;
             }
         }
+
+        #navbar {
+            transition: transform 0.3s ease-in-out;
+        }
+        #main-content, #header {
+            transition: margin-left 0.3s ease-in-out;
+        }
+        .sidebar-open #main-content, .sidebar-open #header {
+            margin-left: 16rem; /* 64 * 0.25rem = 16rem */
+        }
+        #header > div {
+            max-width: 100%;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
-    <div class="min-h-screen flex">
+    <div class="min-h-screen flex" id="body-container">
         <nav id="navbar" class="fixed top-0 left-0 h-full w-64 bg-green-600 hover:bg-green-700 text-white shadow-lg z-30 rounded-r-lg transform -translate-x-full flex-col no-print">
             <div class="p-5 flex items-center justify-between">
                 <div class="flex items-center space-x-2 text-white">
@@ -56,11 +69,11 @@
                     </li>
                 </ul>
             </div>
-            <div class="p-4 border-t border-green-400 border-opacity-50">
+            <div class="fixed bottom-0 p-4 border-t border-green-400 border-opacity-50">
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="w-full flex items-center space-x-3 px-4 py-2 rounded-md text-white hover:bg-white hover:bg-opacity-10 transition duration-150">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013 3v1"></path></svg>
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         <span>Logout</span>
                     </button>
                 </form>
@@ -85,7 +98,7 @@
                  </div>
             </header>
 
-            <main class="flex-1 p-6 mt-16">
+            <main id="main-content" class="flex-1 pt-20 pb-8">
                 <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
                     <div class="mb-6 flex justify-between items-center">
                         <div>
@@ -208,17 +221,39 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const navbarToggle = document.getElementById('navbar-toggle');
-            const navbar = document.getElementById('navbar');
-            
-            if (navbarToggle && navbar) {
-                navbarToggle.addEventListener('click', function() {
-                    navbar.classList.toggle('-translate-x-full');
-                });
-            }
+<script>
+    const navbarToggle = document.getElementById('navbar-toggle');
+    const navbarClose = document.getElementById('navbar-close');
+    const navbar = document.getElementById('navbar');
+    const bodyContainer = document.getElementById('body-container');
+
+    function toggleSidebar() {
+        navbar.classList.toggle('-translate-x-full');
+        navbar.classList.toggle('translate-x-0');
+        bodyContainer.classList.toggle('sidebar-open');
+    }
+
+    if (navbarToggle && navbar && bodyContainer) {
+        navbarToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSidebar();
         });
-    </script>
+    }
+
+    if (navbarClose && navbar && bodyContainer) {
+         navbarClose.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSidebar();
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth < 768) {
+             if (bodyContainer.classList.contains('sidebar-open') && !navbar.contains(e.target) && e.target !== navbarToggle) {
+                toggleSidebar();
+            }
+        }
+    });
+</script>
 </body>
 </html>

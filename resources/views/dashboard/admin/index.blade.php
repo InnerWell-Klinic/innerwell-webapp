@@ -5,9 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InnerWell Klinik - Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+    #navbar {
+        transition: transform 0.3s ease-in-out;
+    }
+    #main-content, #header {
+        transition: margin-left 0.3s ease-in-out;
+    }
+    .sidebar-open #main-content, .sidebar-open #header {
+        margin-left: 16rem; /* 64 * 0.25rem = 16rem */
+    }
+    #header > div {
+        max-width: 100%;
+    }
+    </style>
 </head>
 <body class="bg-gray-100">
-    <div class="min-h-screen flex">
+    <div class="min-h-screen flex" id="body-container">
         <!-- Sidebar -->
         <nav id="navbar" class="fixed top-0 left-0 h-full w-64 bg-green-600 hover:bg-green-700 text-white shadow-lg z-30 rounded-r-lg transform -translate-x-full flex flex-col">
             <div class="p-5 flex items-center justify-between">
@@ -49,31 +63,30 @@
         </nav>
 
         <div class="flex-1 flex flex-col">
-            <!-- Header -->
-            <header id="header" class="bg-white shadow-sm p-4 fixed top-0 left-0 right-0 z-20">
-                <div class="flex justify-between items-center w-full">
-                    <div class="flex items-center space-x-4">
-                        <button id="navbar-toggle" class="text-gray-600 hover:text-green-600 focus:outline-none">
-                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                            </svg>
-                        </button>
-                        <div class="flex items-center space-x-2 text-gray-800">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-green-600">
-                                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-                                <path d="M3.22 12H9.5l.7-1.44 2.1 4.24 1.4-2.82h4.78"/>
-                            </svg>
-                            <span class="text-xl font-semibold hidden sm:inline">InnerWell Klinic - Admin</span>
-                        </div>
-                    </div>
-                    <div class="text-sm text-gray-600">
-                        Selamat datang, <span class="font-medium">{{ Auth::user()->nama_lengkap ?? 'Admin' }}</span>
+        <header id="header" class="bg-white shadow-sm p-4 fixed top-0 left-0 right-0 z-20">
+            <div class="flex justify-between items-center w-full">
+                <div class="flex items-center space-x-4">
+                    <button id="navbar-toggle" class="text-gray-600 hover:text-green-600 focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                    <div class="flex items-center space-x-2 text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-green-600 group-hover:animate-pulse">
+                            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                            <path d="M3.22 12H9.5l.7-1.44 2.1 4.24 1.4-2.82h4.78"/>
+                        </svg>
+                        <span class="text-xl font-semibold hidden sm:inline">InnerWell Klinik - Admin</span>
                     </div>
                 </div>
-            </header>
+                <div class="text-sm text-gray-600">
+                    Selamat datang, <span class="font-medium">{{ Auth::user()->nama_lengkap ?? 'Admin' }}</span>
+                </div>
+            </div>
+        </header>
 
-            <main class="flex-1 pt-20 p-6 bg-gray-50">
-                <div class="max-w-7xl mx-auto">
+            <main id="main-content" class="flex-1 pt-20 pb-8">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="mb-6">
                         <h1 class="text-2xl font-bold text-gray-900">Manajemen Pembayaran</h1>
                         <p class="text-gray-600">Kelola pembayaran pasien yang telah selesai berobat</p>
@@ -203,18 +216,40 @@
         </div>
     </div>
 
-    <script>
-        // Toggle sidebar
-        document.addEventListener('DOMContentLoaded', function() {
-            const navbarToggle = document.getElementById('navbar-toggle');
-            const navbar = document.getElementById('navbar');
-            
-            if (navbarToggle && navbar) {
-                navbarToggle.addEventListener('click', function() {
-                    navbar.classList.toggle('-translate-x-full');
-                });
-            }
+<script>
+    const navbarToggle = document.getElementById('navbar-toggle');
+    const navbarClose = document.getElementById('navbar-close');
+    const navbar = document.getElementById('navbar');
+    const bodyContainer = document.getElementById('body-container');
+
+    function toggleSidebar() {
+        navbar.classList.toggle('-translate-x-full');
+        navbar.classList.toggle('translate-x-0');
+        bodyContainer.classList.toggle('sidebar-open');
+    }
+
+    if (navbarToggle && navbar && bodyContainer) {
+        navbarToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSidebar();
         });
-    </script>
+    }
+
+    if (navbarClose && navbar && bodyContainer) {
+         navbarClose.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSidebar();
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth < 768) {
+             if (bodyContainer.classList.contains('sidebar-open') && !navbar.contains(e.target) && e.target !== navbarToggle) {
+                toggleSidebar();
+            }
+        }
+    });
+</script>
+
 </body>
 </html>

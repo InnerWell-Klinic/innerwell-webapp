@@ -53,7 +53,9 @@ Route::middleware('role:admin')->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/pembayaran/create/{rekamMedisDetail}', [AdminDashboardController::class, 'create'])->name('pembayaran.create');
     Route::post('/pembayaran/store/{rekamMedisDetail}', [AdminDashboardController::class, 'store'])->name('pembayaran.store');
-    Route::get('/pembayaran/show/{pembayaran}', [AdminDashboardController::class, 'show'])->name('pembayaran.show');
+    Route::get('/pembayaran/show/{pembayaran}', [AdminDashboardController::class, 'getInvoiceData'])->name('show.invoice');
+    // sementara pake api pasien dulu untuk lihat invoice 
+    Route::get('/manajemen/invoice/{pembayaran}', [ManajemenDashboardController::class, 'showInvoice'])->name('manajemen.invoice.show');
 });
 
 // Dokter routes

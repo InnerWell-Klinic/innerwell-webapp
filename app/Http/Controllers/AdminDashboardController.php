@@ -7,6 +7,8 @@ use App\Models\Pembayaran;
 use App\Models\Medicine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
+use illuminate\Support\Facades\Auth;
 
 class AdminDashboardController
 {
@@ -70,22 +72,36 @@ class AdminDashboardController
             ->with('success', 'Invoice berhasil dibuat');
     }
 
+
     public function show(Pembayaran $pembayaran)
     {
+        // Load relationships
         $pembayaran->load(['rekamMedisDetail.rekamMedis.pasien.user', 'rekamMedisDetail.dokter.user', 'rekamMedisDetail.poli']);
         
-        // Ambil data obat
-        $obatIds = explode(' ; ', $pembayaran->rekamMedisDetail->obat);
-        $obatIds = array_filter($obatIds);
-        
+        // Get medicine list from rekam medis detail
         $obatList = [];
-        foreach ($obatIds as $obatId) {
-            $obat = Medicine::find($obatId);
-            if ($obat) {
-                $obatList[] = $obat;
+        if ($pembayaran->rekamMedisDetail && $pembayaran->rekamMedisDetail->obat) {
+            $obatIds = explode(' ; ', $pembayaran->rekamMedisDetail->obat);
+            $obatIds = array_filter($obatIds);
+            
+            foreach ($obatIds as $obatId) {
+                $obat = Medicine::find($obatId);
+                if ($obat) {
+                    $obatList[] = $obat;
+                }
             }
         }
 
         return view('dashboard.admin.pembayaran.show', compact('pembayaran', 'obatList'));
+    }
+
+     private function getInvoiceData($startDate, $endDate)
+    {
+        // Hanya tampilkan invoice yang sudah lunas
+        return Pembayaran::where('status_pembayaran', 'lunas')
+            ->with(['rekamMedisDetail.rekamMedis.pasien.user', 'rekamMedisDetail.dokter.user', 'rekamMedisDetail.poli'])
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc')
+            ->paginate(25);
     }
 }
