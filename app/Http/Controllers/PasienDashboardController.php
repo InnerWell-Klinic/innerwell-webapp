@@ -6,6 +6,7 @@ use App\Models\Antrian;
 use App\Models\Poli;
 use App\Models\Pembayaran;
 use App\Models\Medicine;
+use App\Models\RekamMedis;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -76,7 +77,14 @@ class PasienDashboardController
         }
 
         // Get unpaid invoices
-        $tagihanBelumLunas = Pembayaran::whereHas('rekamMedisDetail', function($query) use ($pasien) {
+        $tagihanBelumLunas = Pembayaran::with
+            (['rekamMedisDetail.rekamMedis',
+            'rekamMedisDetail.poli', 
+            'rekamMedisDetail.dokter',
+            'poli',
+            'dokter'])
+                    
+            ->whereHas('rekamMedisDetail', function($query) use ($pasien) {
             $query->whereHas('rekamMedis', function($q) use ($pasien) {
                 $q->where('pasien_id', $pasien->id);
             });

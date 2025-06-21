@@ -31,5 +31,6 @@ class AppServiceProvider extends ServiceProvider
 
         // Register the role middleware
         Route::aliasMiddleware('role', \App\Http\Middleware\CheckRole::class);
+        Model::preventLazyLoading(!app()->isProduction());
     }
 }
